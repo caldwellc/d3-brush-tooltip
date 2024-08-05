@@ -17,7 +17,7 @@ Adding the tooltip to a d3 brush requires importing the library and providing a 
 ```html
 <!DOCTYPE html>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="dist/d3-brush-tooltip.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-brush-tooltip@1.0.0"></script>
 <link rel="stylesheet" href="css/style.css">
 <html>
     <body>
