@@ -1,6 +1,6 @@
 # d3-brush-tooltip
 
-Library for adding a tooltip to a d3 brush.
+Library for adding a tooltip to a [d3 brush](https://github.com/d3/d3-brush).
 
 [![npm version](https://badge.fury.io/js/d3-brush-tooltip.svg)](https://badge.fury.io/js/d3-brush-tooltip)
 
