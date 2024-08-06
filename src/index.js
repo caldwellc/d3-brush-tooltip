@@ -10,8 +10,17 @@ import $ from "jquery";
  * @param initialText - initial text to display
  * @param brushHoverElementSelectors - default selectors: [.selection, .handle--e, .handle--w], add selectors for any other element you add to the brush container that you'd like to show the popup while hovered over.
  * @param timeout - time to keep tooltip open when exiting the brush
+ * @param updateTooltipLocationFn - function that determines where a tooltip should be placed, {pageX, pageY} are the arguments
  */
-export function addTooltipToBrush(tooltipId, brush, brushContainer, selectionToText, initialText, brushHoverElementSelectors = [".selection", ".handle--e", ".handle--w"], timeout = 200) {
+export function addTooltipToBrush(tooltipId, 
+	brush,
+	brushContainer, 
+	selectionToText, 
+	initialText, 
+	brushHoverElementSelectors = [".selection", ".handle--e", ".handle--w"], 
+	timeout = 200,
+	updateTooltipLocationFn) {
+
 	const tooltip = d3.select(tooltipId);
 	let tooltipLocked = false;
 	let hideTooltipTimeout = null;
@@ -25,6 +34,7 @@ export function addTooltipToBrush(tooltipId, brush, brushContainer, selectionToT
 		clearHideTooltipTimeout();
 		tooltipLocked = true;
 		updateTooltipLocation(e);
+		updateTooltipText(tooltipText);
 		if (show) {
 			showTooltip();
 		}
@@ -66,14 +76,20 @@ export function addTooltipToBrush(tooltipId, brush, brushContainer, selectionToT
 	 * @param pageX
 	 * @param pageY
 	 */
-	const updateTooltipLocation = ({ pageX, pageY }) => {
-		tooltip.html(tooltipText);
+	const updateTooltipLocation = updateTooltipLocationFn ? updateTooltipLocationFn : ({ pageX, pageY }) => {
 		const jqTooltip = $(tooltipId);
+		const doc = $(document);
 		let left = pageX + 16;
-		if (left + 280 >= $(document).width()) {
+		if (left + 280 >= doc.width()) {
 			left = pageX - jqTooltip.outerWidth() - 16;
 		}
-		tooltip.style("left", left + "px").style("top", (pageY - 16) + "px");
+		const scrollPos = doc.scrollTop();
+		const halfLabelHeight = 16; 
+		tooltip.style("left", left + "px").style("top", (pageY - scrollPos - halfLabelHeight) + "px");
+	};
+
+	const updateTooltipText = (text) => {
+		tooltip.html(text);
 	};
 
 	/**
@@ -93,6 +109,7 @@ export function addTooltipToBrush(tooltipId, brush, brushContainer, selectionToT
 		if (sourceEvent && text) {
 			tooltipText = text;
 			updateTooltipLocation(sourceEvent);
+			updateTooltipText(tooltipText);
 		} else {
 			hideTooltip();
 		}
@@ -151,7 +168,6 @@ export function addTooltipToBrush(tooltipId, brush, brushContainer, selectionToT
 	
 	// setup mouse event handling for the various components of a brush
 	brushComponents.filter((component) => component != null).forEach((component) => {
-		let mouseDown = false;
 		component
 			.on("mouseover", () => {
 				showTooltip();
@@ -159,18 +175,15 @@ export function addTooltipToBrush(tooltipId, brush, brushContainer, selectionToT
 			.on("mousemove", (e) => {
 				showTooltip();
 				updateTooltipLocation(e);
+				updateTooltipText(tooltipText);
 			})
 			.on("mouseup", () => {
-				mouseDown = false
 				unlockTooltip();
 			})
 			.on("mouseout", () => {
-				if (!mouseDown) {
-					hideTooltip();
-				}
+				hideTooltip();
 			})
 			.on("mousedown", (e) => {
-				mouseDown = true;
 				lockTooltip(e);
 			});
 	});

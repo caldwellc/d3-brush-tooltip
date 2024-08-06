@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-brush-tooltip@1.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-brush-tooltip@1.0.1"></script>
 <link rel="stylesheet" href="css/style.css">
 <html>
     <body>
@@ -83,10 +83,14 @@
 
             // function that takes a selection and provides the count of records within those bounds
             function getTooltipText(selection) {
-                const min = Math.round(x.invert(selection[0]));
-                const max = Math.round(x.invert(selection[1]));
-                const count = data.filter(value => value >= min && value <= max).length;
-                return `${min} - ${max}: ${count} records`;
+                if (selection) {
+                    const min = Math.round(x.invert(selection[0]));
+                    const max = Math.round(x.invert(selection[1]));
+                    const count = data.filter(value => value >= min && value <= max).length;
+                    return `${min} - ${max}: ${count} records`;
+                } else {
+                    return null;
+                }
             }
 
             // add tooltip to the brush

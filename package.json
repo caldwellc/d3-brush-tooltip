@@ -1,6 +1,6 @@
 {
   "name": "d3-brush-tooltip",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tooltip for d3-brush",
   "main": "dist/d3-brush-tooltip.js",
   "scripts": {

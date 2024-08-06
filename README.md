@@ -17,7 +17,7 @@ Adding the tooltip to a d3 brush requires importing the library and providing a 
 ```html
 <!DOCTYPE html>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-brush-tooltip@1.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-brush-tooltip@1.0.1"></script>
 <link rel="stylesheet" href="css/style.css">
 <html>
     <body>
@@ -81,7 +81,7 @@ Adding the tooltip to a d3 brush requires importing the library and providing a 
                 .append("rect")
                 .attr("x", 1)
                 .attr("transform", function (d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-                .attr("width", function (d) { return x(d.x1) - x(d.x0) - 1; })
+                .attr("width", function (d) { return Math.max(0, x(d.x1) - x(d.x0) - 1); })
                 .attr("height", function (d) { return height - y(d.length); })
                 .style("fill", "#69b3a2")
 
@@ -100,10 +100,14 @@ Adding the tooltip to a d3 brush requires importing the library and providing a 
 
             // function that takes a selection and provides the count of records within those bounds
             function getTooltipText(selection) {
-                const min = Math.round(x.invert(selection[0]));
-                const max = Math.round(x.invert(selection[1]));
-                const count = data.filter(value => value >= min && value <= max).length;
-                return `${min} - ${max}: ${count} records`;
+                if (selection) {
+                    const min = Math.round(x.invert(selection[0]));
+                    const max = Math.round(x.invert(selection[1]));
+                    const count = data.filter(value => value >= min && value <= max).length;
+                    return `${min} - ${max}: ${count} records`;
+                } else {
+                    return null;
+                }
             }
 
             // add tooltip to the brush
